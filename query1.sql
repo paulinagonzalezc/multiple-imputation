@@ -1,0 +1,11 @@
+-- Query1.sql
+-- imputes the missing data in the `age` field 
+-- of a hospital with the median of all entries
+-- from the same hospital, given schema:
+-- Data(patientID, hospitalID, age, cholesterol, tomography).
+-- For example, given relation instance:
+-- {(0,0,15,0,0), (1,0,NULL,42,12), (2,1,NULL,NULL,100), (3,1,20,10,NULL)}
+-- this query should transform it into the following instance:
+--  {(0,0,15,0,0), (1,0,15,42,12), (2,1,20,NULL,100), (3,1,20,10,NULL)}
+
+-- REPLACE THIS LINE WITH YOUR QUERY AND SUBMIT THIS FILE.
