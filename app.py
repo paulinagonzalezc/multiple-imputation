@@ -10,7 +10,7 @@ from sqlalchemy.exc import IntegrityError
 import os
 
 # MySQL database configuration
-host = "localhost:3308"
+host = "localhost:3306"
 database = "db"
 user = "user"
 password = "password"
@@ -23,6 +23,7 @@ session = Session()
 # Step 3: Define a Model Class
 Base = declarative_base()
 table_name = "PatientData"  # Replace with the name of the table you want to drop
+
 
 class Patient(Base):
     __tablename__ = table_name
@@ -47,9 +48,14 @@ Base.metadata.create_all(engine)
 
 folder_path = "files"
 
-def updatePatient(patientID,hospitalID, new_record):
+
+def updatePatient(patientID, hospitalID, new_record):
     print("Updating")
-    patient = session.query(Patient).filter(and_(Patient.patientID == patientID, Patient.hospitalID == hospitalID)).first()
+    patient = (
+        session.query(Patient)
+        .filter(and_(Patient.patientID == patientID, Patient.hospitalID == hospitalID))
+        .first()
+    )
     # updated_patient = {
     #     "patientID": new_record.patientID if patient.patientID == None else patient.patientID,
     #     "hospitalID": new_record.hospitalID if patient.hospitalID == None else patient.hospitalID,
@@ -57,15 +63,15 @@ def updatePatient(patientID,hospitalID, new_record):
     #     "cholesterol": new_record.cholesterol if patient.cholesterol == None else patient.cholesterol,
     #     "tomography": new_record.tomography if patient.tomography == None else patient.tomography,
     # }
-    if patient.age == None: 
+    if patient.age == None:
         patient.age = new_record.age
-    if patient.cholesterol == None: 
+    if patient.cholesterol == None:
         patient.cholesterol = new_record.cholesterol
     if patient.tomography == None:
         patient.tomography = new_record.tomography
-    
+
     session.commit()
-    
+
 
 def insertRecords(filepath):
     data = pd.read_csv(filepath)
@@ -98,18 +104,19 @@ def insertRecords(filepath):
             .filter(Patient.hospitalID == hospitalID, Patient.patientID == patientID)
             .all()
         )
-        
+
         if len(records) > 0:
             for result in records:
                 updatePatient(result.patientID, result.hospitalID, new_record)
-        else :
-            session.add(new_record)            
+        else:
+            session.add(new_record)
         # Check if there are duplicate records (two or more)
 
         i = i + 1
 
     # Step 6: Add and Commit
     session.commit()
+
 
 # Check if the folder exists
 if os.path.exists(folder_path) and os.path.isdir(folder_path):
@@ -120,10 +127,8 @@ if os.path.exists(folder_path) and os.path.isdir(folder_path):
     for file_name in file_list:
         # Print each file name
         print(f"Inserting {file_name}")
-        insertRecords(f'files/{file_name}')
+        insertRecords(f"files/{file_name}")
 
 else:
     print(f"The folder '{folder_path}' does not exist or is not a directory.")
 # MySQL database configuration
-
-
